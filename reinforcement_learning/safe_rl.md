@@ -4,7 +4,7 @@
 
 [J. Schulman, 2017, arxiv] (PPO) [[Proximal Policy Optimization Algorithms]]
 
-[J. Achiam, ..., P Abbeel, 2017 ICML] (CPO) [[Constrained Policy Optimization]]
+[J. Achiam, ..., P Abbeel, 2017 ICML] (CPO) [[ai_paper/reinforcement_learning/Constrained Policy Optimization]]
 
 [Y. As, ..., A Krause, ICLR 2022] (LAMBDA) [[Constrained Policy Optimization Via Bayesian World Models]]
 

@@ -67,7 +67,7 @@
 ## Safe RL
 - 목적: constraints 있는 상황에서 objective를 최적화하는 것을 다룬다.
 
-- [CPO]:([[Constrained Policy Optimization]]) general-purpose policy search algorithm을 제안
+- [CPO]:([[ai_paper/reinforcement_learning/Constrained Policy Optimization]]) general-purpose policy search algorithm을 제안
 	- second-order method때문에 연산량이 높음에도 불구하고, 제약조건을 반복적으로 충족하는데 초점을 둠.
 - ...
 
