@@ -103,3 +103,72 @@
 # 결과
 - 다양한 태스크(저차원 ~ vision-only input까지)에서 거의 zero-cost performance를 달성함
 - performance랑 safety 사이에 균형을 잡는데 효율적임.
+
+
+
+
+
+---
+
+
+review
+3개의 variants
+1. constrained cross entropy method (CCEM) 구현, 간단한 MPC 알고리즘으로 high quality trajectory를 filter하고 안전한 trajectory로 수렴하기 위해 action selection parameter를 업데이트 한다.
+나머지 둘은 Lagrangian method로 구현함.
+2. OSRP-Lag: CCEM이랑 비슷하게, constrained online planning을 위해 PID Lagrangian을 구현함.
+3. 마지막으로 BSRP-Lag (augmented Lagrangian)은 policy gradient가 cost TD-lambda estimates를 포함하도록 변경함.
+	- 이 버전은 위에 두개랑 달리 online planning 안씀
+
+
+Safety-Gym의 5개 환경에서 실험함.
+
+
+약점
+1. Safe RL 쪽 관련연구 더 설명해라
+2. 여러 방법들 짜집기 했다. (DreamerV3, PID Lagrangian, CCEM, Augmented Lagrangian)
+3. 결과 분석 더 해라
+	1. 모든 method가 cost에서는 비슷한 성능을 내는 것으로 보임.
+	2. 근데 reward는 환경마다 다르게 보임.
+		1. 왜 어떤 알고리즘은 특정 태스크에서 reward를 더 받게 되는건지 설명.
+
+답변
+2. model-based RL에는 world model을 사용하는 2가지 갈래가 있음
+	1. world model을 online planning에 사용
+	2. world model로 roll out을 해서 나온 trajectory들을 offline policy optimization에 사용
+		1. 이걸 background planning이라 부름
+- 우리 주장은, world model로 safe RL에서 zero cost를 이룰 수 있다고 생각함.
+	- 이유: online planning이나 background planning으로!
+		- 이를 OSRP랑 BSRP-Lag로 입증함.
+			- BSRP-Lag: actor에서 생성된 action 분포를 최적화하기 위한 policy optimization의 augmented Lagrangian을 사용함.
+			- OSRP: action distribution의 online optimization을 위해 CCEM을 world model이랑 같이 사용함.
+		- 근데, cost model의 computational resource랑 error 제약사항 때문에, online planning은 그것의 능력을 long term safety랑 reward 균형 잡는 데에 사용함.
+			- 이를 다루기 위해 OSRP-Lag에서 online planning에 Lagrangian이랑 critics를 추가한 것을 보임.
+
+- Lagrangian 방식을 골랐기 때문에 zero cost를 이룬 것이 아니다!
+- 중요한 점은 **world model을 이용해서 safety-relevant state를 얼마나 정확하게 모델링 하는가**이다.
+
+
+ - 지금 constrained policy optimization에서 가장 효과적인 방법
+	 - PID Lagrangian
+	 - Augmented Lagrangian
+
+
+- online planning에서, planner는 실시간으로 constrained optimization 문제를 풀어야 한다.
+- 우리 알고리즘에서, Lagrangian multiplier의 변화는 환경에서 바로 주는 실제 cost의 variation으로 결정된다.
+
+
+LAMBDA
+- policy optimization하기 위해 bayesian 방식으로 여러 world model parameter를 샘플링하면 point push task처럼 민첩한 task에서 성능 향상 할 수 있다.
+	- 왜냐하면 여러 다른 world model에서 학습하는 것을 효과적이게 만들기 때문임.
+	- 이는 sim2real에서 부르는 domain randomization과 닮았다.
+	- 다른 world model은 다른 physical parameter를 가지게 됨 (차량의 최대 속도나 마찰 같은거)
+	- 그래서 이 접근법은 더 robust하게 policy 성능 향상할 수 있음.
+
+W
+
+---
+
+contribution
+1. online safety-reward planning
+2. integration of Lagrangian methods
+3. balancing long-term reward and costs within world models
